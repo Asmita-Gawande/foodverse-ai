@@ -343,6 +343,95 @@ const TOOLS = [
   { id: "plan", name: "Meal planner", title: "Plan your meals", desc: "Choose your goal, diet, allergies and duration to generate a meal plan.", render: () => <MealPlanTool /> }
 ];
 
+
+function OverviewPage({ onNavigate }) {
+  const modules = [
+    {
+      id: "food",
+      icon: "◉",
+      color: "green",
+      title: "Food Recognition",
+      desc: "Identify dishes and nutrition",
+    },
+    {
+      id: "fresh",
+      icon: "♨",
+      color: "orange",
+      title: "Freshness Detector",
+      desc: "Detect spoilage instantly",
+    },
+    {
+      id: "hygiene",
+      icon: "♢",
+      color: "blue",
+      title: "Hygiene Monitor",
+      desc: "Kitchen compliance AI",
+    },
+    {
+      id: "cook",
+      icon: "♧",
+      color: "purple",
+      title: "Smart Kitchen",
+      desc: "Real-time cooking aid",
+    },
+    {
+      id: "plan",
+      icon: "▦",
+      color: "cyan",
+      title: "Meal Planner",
+      desc: "Personalized diet plans",
+    },
+  ];
+
+  return (
+    <div className="overview-page">
+      <section className="overview-hero">
+        <div className="hero-content">
+          <span className="eyebrow">YOUR FOOD INTELLIGENCE WORKSPACE</span>
+          <h1>Welcome to <span>FoodVerse AI</span></h1>
+          <p>
+            A unified multimodal AI platform for food recognition,
+            freshness checks, kitchen hygiene and smarter meal planning.
+          </p>
+          <span className="hero-tag">● AI-powered analysis</span>
+        </div>
+        <div className="hero-decoration" aria-hidden="true">∿</div>
+      </section>
+
+      <div className="overview-section-heading">
+        <div>
+          <h2>Your AI tools</h2>
+          <p>Choose a module to get started.</p>
+        </div>
+        <span className="module-count">05 MODULES</span>
+      </div>
+
+      <section className="module-grid">
+        {modules.map((module) => (
+          <button
+            type="button"
+            className="module-card"
+            key={module.id}
+            onClick={() => onNavigate(module.id)}
+          >
+            <span className={`module-icon ${module.color}`}>
+              {module.icon}
+            </span>
+            <strong>{module.title}</strong>
+            <span className="module-description">{module.desc}</span>
+            <span className="module-launch">OPEN MODULE <span>↗</span></span>
+          </button>
+        ))}
+      </section>
+
+      <div className="overview-footer">
+        <span className="status-dot"></span>
+        Your FoodVerse workspace is ready
+      </div>
+    </div>
+  );
+}
+
 function HistoryPage() {
   const [records, setRecords] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -396,7 +485,7 @@ function HistoryPage() {
 
 function App() {
   const [email, setEmail] = useState(localStorage.getItem(EMAIL_KEY) || "");
-  const [active, setActive] = useState("food");
+  const [active, setActive] = useState("overview");
   const [authChecking, setAuthChecking] = useState(Boolean(localStorage.getItem(TOKEN_KEY)));
   const [authVersion, setAuthVersion] = useState(0);
 
@@ -453,6 +542,12 @@ function App() {
           <div><strong>FoodVerse AI</strong><small>Multimodal food intelligence</small></div>
         </div>
         <nav aria-label="Tools">
+          <button
+  className={"nav-item" + (active === "overview" ? " active" : "")}
+  onClick={() => setActive("overview")}
+>
+  ⊞ Overview
+</button>
           {TOOLS.map(item => (
             <button key={item.id} className={"nav-item" + (item.id === active ? " active" : "")} onClick={() => setActive(item.id)}>
               {item.name}
@@ -469,17 +564,27 @@ function App() {
       </aside>
 
       <main className="main">
-        {active === "history" ? (
-          <>
-            <header className="page-head"><h1>Analysis history</h1><p>Your previous FoodVerse AI results, saved privately.</p></header>
-            <HistoryPage key={email} />
-          </>
-        ) : (
-          <>
-            <header className="page-head"><h1>{tool.title}</h1><p>{tool.desc}</p></header>
-            <div key={tool.id}>{tool.render()}</div>
-          </>
-        )}
+       
+{active === "overview" ? (
+  <OverviewPage onNavigate={setActive} />
+) : active === "history" ? (
+  <>
+    <header className="page-head">
+      <h1>Analysis history</h1>
+      <p>Your previous FoodVerse AI results, saved privately.</p>
+    </header>
+    <HistoryPage key={email} />
+  </>
+) : (
+  <>
+    <header className="page-head">
+      <h1>{tool.title}</h1>
+      <p>{tool.desc}</p>
+    </header>
+    <div key={tool.id}>{tool.render()}</div>
+  </>
+)}
+
       </main>
     </div>
   );
